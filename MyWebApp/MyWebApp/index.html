@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+<h1>Web Api Test</h1>
+<div id="result"></div>  
+<div id="dialog">
+    <form id="product-form">
+        <div>
+            <label>Name</label>
+            <input id="Form-Name" name="Name"/>
+        </div>
+        <div>
+            <label>Category</label>
+            <input id="Form-Category" name="Category" />
+        </div>
+        <div>
+            <label>Price</label>
+            <input id="Form-Price" name="Price" />
+        </div>
+        <input id="Form-Id" name="id"/>
+        <button type="submit" id="submit-btn">Submit</button>
+    </form>
+
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+        </tr>
+    </table>
+</div>      
+    <script>
+
+        var rowString = "<tr><td class='row-Id'></td><td class='row-Name'></td><td class='row-Category'></td><td class='row-Price'></td></tr>";
+        $(document).ready(function () {
+            $.getJSON("Api/Products", null, function (res) {
+                var $table = $(".table");
+                var $tr = $table.find("tr").first();
+                $table.find("tr").remove();
+                $table.append($tr);
+                $trRow = null;
+                $.each(res, function (i, o) {
+                    $trRow = $(rowString);
+                    for (s in o) {
+                        $trRow.find(".row-" + s).html(o[s]);
+                    }
+                    
+                    $table.append($trRow);
+                });
+                
+                $("#result").append($table);
+                //$("#result").append($table.append($tr));
+                
+            });
+
+            $("#submit-btn").click(function () {
+                $.post("Api/Products", $("#product-form").serialize(), function (res) {
+                    console.log(res);
+                });
+                return false;
+            });
+        });
+
+        function edit(id) {
+            $.getJSON("Api/Products", { id: id }, function (res) {
+                for (s in res) {
+                    $("#Form-"+s).val(res[s]);
+                }
+                
+            });
+        }
+    </script>
+</body>
+</html>
